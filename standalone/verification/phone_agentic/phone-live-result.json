@@ -1,0 +1,27 @@
+{
+  "mode": "professor_agentic",
+  "gate_score": 1,
+  "gate_threshold": 0.75,
+  "gate_verdict": "Defect Detected",
+  "gemini_called": true,
+  "gemini_model": "gemini-3.6-flash",
+  "gemini_fallback_used": true,
+  "gemini_attempts": [
+    {
+      "model": "gemini-3.8-flash",
+      "status": "http_503",
+      "elapsed_ms": 24829
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "status": "success",
+      "elapsed_ms": 7707
+    }
+  ],
+  "defect": "Crack",
+  "severity": "Low",
+  "action": "Non-Structural \/ Hairline Crack — Seal & Observe.\n  1. Map crack pattern to classify (shrinkage, thermal, or settlement origin).\n  2. For cracks < 0.2 mm width: apply flexible polyurethane or epoxy crack sealer.\n  3. For cracks 0.2–0.3 mm: route and seal using V-groove cutting and elastomeric sealant.\n  4. Apply waterproof crystalline coating to prevent water ingress and rebar corrosion.\n  5. Schedule 6-monthly monitoring; escalate if crack width increases by > 0.05 mm.\n  Ref: IS 456 Table 20 \/ ACI 224R",
+  "gate_ms": 1045,
+  "elapsed_ms": 35059,
+  "raw_response": "Defect Type: Crack\nSeverity: Low"
+}

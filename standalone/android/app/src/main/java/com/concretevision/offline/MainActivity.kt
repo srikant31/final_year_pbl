@@ -55,6 +55,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        GeminiKeyStore.importPrivateFile(this)
         selectedMode = savedInstanceState?.getInt("analysis_mode",0) ?: 0
         buildScreen()
         pendingCameraName = savedInstanceState?.getString("pending_capture")?.takeIf {
@@ -131,12 +132,23 @@ class MainActivity : Activity() {
             }
         }
         content.addView(modeGroup)
+        content.addView(button("Gemini key settings",6001,Color.rgb(72,85,106)).apply {
+            setOnClickListener {
+                val input=EditText(this@MainActivity).apply {inputType=android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD;hint="Paste your own Gemini API key"}
+                android.app.AlertDialog.Builder(this@MainActivity).setTitle("Gemini key on this phone")
+                    .setMessage("The key is encrypted on this phone. Leave blank to remove it. Photos are sent directly to Google only after the local gate passes.")
+                    .setView(input).setNegativeButton("Cancel",null).setPositiveButton("Save") {_,_->
+                        runCatching {GeminiKeyStore.save(this@MainActivity,input.text.toString())}.onSuccess {status.text="Phone Gemini key setting saved"}.onFailure {showError("Could not save the key")}
+                        input.text.clear()
+                    }.show()
+            }
+        })
         modeExplanation=label("",13f,muted); content.addView(modeExplanation)
         takePhoto = button("Take photo",ID_CAMERA,Color.rgb(29,111,165))
         takePhoto.setOnClickListener { openCamera() }; content.addView(takePhoto)
         choose = button("Choose a photograph",ID_CHOOSE,Color.rgb(29,111,165))
         choose.setOnClickListener { openPicker() }; content.addView(choose)
-        filename = label("JPEG, PNG or BMP • up to 15 MiB",13f,muted).apply { id = ID_FILENAME }
+        filename = label("JPEG, PNG or BMP â€¢ up to 15 MiB",13f,muted).apply { id = ID_FILENAME }
         content.addView(filename)
         preview = ImageView(this).apply {
             id = ID_PREVIEW; contentDescription = "Selected photograph"; scaleType = ImageView.ScaleType.FIT_CENTER
@@ -240,7 +252,7 @@ class MainActivity : Activity() {
         if (!restoring) { lastPrediction = null; lastAgentic = null }
         report.visibility = View.GONE; preview.visibility = View.GONE
         filename.text = name
-        setBusy(true,"Opening photograph…")
+        setBusy(true,"Opening photographâ€¦")
         worker.execute {
             try {
                 val bitmap = contentResolver.openInputStream(uri)?.use { ImageLoader.decode(it) }
@@ -272,7 +284,7 @@ class MainActivity : Activity() {
         if(busy) return
         val token=generation; val mode=selectedMode
         lastPrediction=null;lastAgentic=null;report.visibility=View.GONE
-        setBusy(true,if(mode==0) "Analyzing on this phone..." else "Running professor pipeline on laptop; Gemini may take a moment...")
+        setBusy(true,if(mode==0) "Analyzing on this phone..." else "Running local gate, then contacting Gemini from this phone...")
         worker.execute {
             try {
                 if(mode==0) {
@@ -292,7 +304,7 @@ class MainActivity : Activity() {
             } catch(e: Exception) {
                 runOnUiThread { if(!isDestroyed && token==generation) {
                     setBusy(false,"")
-                    showError(if(mode==1) "Online analysis failed. Check laptop server, USB forwarding and internet. ${e.message ?: "Retry when connected."}"
+                    showError(if(mode==1) "Online analysis failed. Check this phone’s internet and Gemini key. ${e.message ?: "Retry when connected."}"
                         else "Analysis failed. ${e.message ?: "Try again."}")
                 } }
             } catch(_: OutOfMemoryError) {
@@ -304,7 +316,7 @@ class MainActivity : Activity() {
     private fun updateModeText() {
         modeBadge.text=if(selectedMode==0) "OFFLINE - ON YOUR PHONE" else "PROFESSOR AGENTIC - ONLINE"
         modeExplanation.text=if(selectedMode==0) "No laptop or internet required" else
-            "Requires USB connection and the laptop server. Analyze sends this photo to the laptop; Gemini receives it only when the original gate passes."
+            "No laptop or USB required. The gate runs on this phone. Gemini receives the photo directly over internet only when the original gate passes."
         limitations.text=if(selectedMode==0)
             "Model outputs one of four defect labels. It has no healthy/unknown category. The inherited severity label is based on confidence; it does not measure physical damage." else
             "Original TFLite gate + Gemini pipeline. Gate score is not Gemini confidence. Original model limitations and recommendation rules are preserved."
@@ -336,7 +348,7 @@ class MainActivity : Activity() {
         generation++; currentBitmap = null; currentUri = null; lastPrediction = null; lastAgentic = null; currentName = ""
         preview.setImageDrawable(null); preview.visibility = View.GONE
         report.removeAllViews(); report.visibility = View.GONE
-        filename.text = "JPEG, PNG or BMP • up to 15 MiB"
+        filename.text = "JPEG, PNG or BMP â€¢ up to 15 MiB"
         setBusy(false,"Ready to select a photograph")
     }
     private fun showPrediction(result: Prediction) {
@@ -381,7 +393,7 @@ class MainActivity : Activity() {
     override fun onDestroy() {
         agenticClient.cancel()
         generation++
-        worker.execute { classifier?.close(); classifier = null }
+        worker.execute { classifier?.close(); classifier = null; agenticClient.close() }
         worker.shutdown()
         super.onDestroy()
     }

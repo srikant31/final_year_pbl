@@ -1,0 +1,35 @@
+{
+  "version": "2.3-phone-agentic",
+  "versionCode": 4,
+  "build": "PASS",
+  "lint_errors": 0,
+  "lint_warnings": 13,
+  "emulator_suite": "OK (19 tests);18 executed,1 opt-in live test skipped",
+  "physical_phone_live_test": "PASS",
+  "physical_phone_gate_parity_test": "PASS",
+  "physical_phone": "Samsung SM-A276B API36",
+  "usb_reverse_removed_before_live_test": true,
+  "runtime_laptop_required": false,
+  "internet_required_for_gemini": true,
+  "offline_model_and_metadata_byte_identical": true,
+  "tflite_sha256": "520a763549b69b3310e5e082ff5520df03e14eb81bd05646ecb47a98071c747e",
+  "teacher_files_unchanged": 32,
+  "apk_sha256": "bd37c5398e3223a6afea8c8954e480eb5cd0675a72003c01e18545fe56723e7b",
+  "apk_bytes": 208622590,
+  "live_elapsed_ms": 35059,
+  "live_gate_ms": 1045,
+  "live_attempts": [
+    {
+      "model": "gemini-3.8-flash",
+      "status": "http_503",
+      "elapsed_ms": 24829
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "status": "success",
+      "elapsed_ms": 7707
+    }
+  ],
+  "key_in_apk": false,
+  "public_github_release_updated": false
+}

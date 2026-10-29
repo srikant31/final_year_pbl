@@ -1,3 +1,7 @@
+# Current release: v2.3 phone-only Agentic AI
+
+The current Android app no longer uses the laptop backend. See [PHONE_AGENTIC.md](../PHONE_AGENTIC.md) and the current root README. Earlier laptop-assisted or offline-only descriptions below are historical. The new APK is compiled, tested and installed on Samsung. No key is published.
+
 # Professor Agentic pipeline on Android
 
 This adapter adds a separate online mode while retaining Flowx offline, camera capture and the image picker. It does not retrain, resize/quantize weights or change either trained artifact. The four-class ONNX remains on the phone. The original spalling_model.tflite runs unchanged on the laptop; Gemini remains Google's online service.

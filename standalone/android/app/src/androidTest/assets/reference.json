@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "probability_tolerance": 0.002,
+  "cases": [
+    {
+      "file": "crack.jpg",
+      "png_file": "crack.png",
+      "tensor_file": "crack.f32",
+      "width": 3072,
+      "height": 3072,
+      "probabilities": [
+        0.0011502644047141075,
+        0.0034689095336943865,
+        0.9903278946876526,
+        0.005052885506302118
+      ],
+      "onnx_probabilities": [
+        0.001150262774899602,
+        0.0034689127933233976,
+        0.9903278946876526,
+        0.005052868276834488
+      ],
+      "max_probability_error": 1.7229467630386353e-08,
+      "defect": "spalling",
+      "severity": "HIGH"
+    },
+    {
+      "file": "honeycomb.jpg",
+      "png_file": "honeycomb.png",
+      "tensor_file": "honeycomb.f32",
+      "width": 3072,
+      "height": 3072,
+      "probabilities": [
+        0.5629071593284607,
+        0.0029079413507133722,
+        0.403930127620697,
+        0.030254779383540154
+      ],
+      "onnx_probabilities": [
+        0.5629081130027771,
+        0.002907939488068223,
+        0.4039291441440582,
+        0.030254710465669632
+      ],
+      "max_probability_error": 9.834766387939453e-07,
+      "defect": "honeycombing",
+      "severity": "LOW"
+    },
+    {
+      "file": "spalling.jpg",
+      "png_file": "spalling.png",
+      "tensor_file": "spalling.f32",
+      "width": 3072,
+      "height": 3072,
+      "probabilities": [
+        0.0200812928378582,
+        0.0017238736618310213,
+        0.9749789834022522,
+        0.00321582006290555
+      ],
+      "onnx_probabilities": [
+        0.0200812928378582,
+        0.0017238736618310213,
+        0.9749789834022522,
+        0.0032158219255506992
+      ],
+      "max_probability_error": 1.862645149230957e-09,
+      "defect": "spalling",
+      "severity": "HIGH"
+    },
+    {
+      "file": "void.jpg",
+      "png_file": "void.png",
+      "tensor_file": "void.f32",
+      "width": 3072,
+      "height": 3072,
+      "probabilities": [
+        0.05548052862286568,
+        0.0009653516463004053,
+        0.0940268337726593,
+        0.8495272994041443
+      ],
+      "onnx_probabilities": [
+        0.05548066645860672,
+        0.0009653526358306408,
+        0.09402748942375183,
+        0.8495265245437622
+      ],
+      "max_probability_error": 7.748603820800781e-07,
+      "defect": "void",
+      "severity": "MEDIUM"
+    }
+  ]
+}

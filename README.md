@@ -1,95 +1,25 @@
-# Agentic AI Gemini Call
+# Concrete Vision - Phone-only Agentic AI (v2.3)
 
-Android v2.2 adds Professor Agentic online mode while retaining offline Flowx and camera capture. Gemini3.8 Flash falls back to3.6 Flash for availability failures. The local trained models, gate, prompt, parser and action rules are preserved. The published teacher Agentic source has its embedded credential removed; configure your own key privately.
+Fixed the laptop dependency in Agentic mode. The Android app now runs the unchanged TFLite gate on the phone and calls Gemini directly over the phone's internet. No laptop server, USB cable or USB forwarding is needed for analysis.
 
-See [setup and flow](agentic_mobile/README.md) and [test evidence](agentic_mobile/verification/REPORT.md). Start with SETUP_AGENTIC.cmd, SET_GEMINI_KEY.cmd, START_AGENTIC_SERVER.cmd and CONNECT_AGENTIC_USB.cmd. The online mode requires the laptop, USB forwarding and laptop internet. The offline mode remains independent.
+## Install and use
 
-Live backend fallback succeeded in38.8s;14 backend checks passed. Gemini labels varied across repeated calls; accuracy and consistency are not established. The physical-phone cloud report display still needs manual verification. Earlier offline-release documentation follows.
+Download the [v2.3 APK](https://github.com/srikant31/final_year_pbl/releases/download/v2.3-phone-agentic/ConcreteVision-v2.3-phone-agentic-debug.apk) from the [Phone-only Agentic AI release](https://github.com/srikant31/final_year_pbl/releases/tag/v2.3-phone-agentic). Install it, open Gemini key settings and save your own key, then select Professor Agentic - online and take or choose a photo. Keys are encrypted with Android Keystore and are excluded from the APK/repository. The development Samsung already has its owner's key configured privately.
 
-# final_year_pbl — Concrete Vision Offline
+Flowx offline remains available without internet. Agentic requires phone internet because Gemini is a cloud service. Camera capture and the image picker remain available in both modes.
 
-Standalone Android concrete-defect inspection app. **Take a photo** using the phone's camera or **choose an existing photograph**, then run the bundled four-class model locally. No laptop server or internet connection is needed for analysis.
+## What was fixed
 
-## Install on Android
+- Moved the original TFLite gate from the laptop backend into the APK, preserving its trained bytes, RGB preprocessing and >0.75 threshold.
+- Replaced localhost uploads with direct HTTPS Gemini calls. Gemini3.8 Flash falls back to3.6 Flash for availability failures; the report shows the answering model.
+- Preserved the professor's prompt, response parsing and recommendation text. Added encrypted phone key settings; no embedded API key.
+- Removed the machine-specific Gradle JDK path. Select JDK17 in Android Studio or set JAVA_HOME on your computer.
+- Updated the UI to explain phone-only operation. Original offline ONNX/metadata remain byte-identical to v2.2.
 
-Download **[ConcreteVision-Standalone-v2-debug.apk](https://github.com/srikant31/final_year_pbl/releases/download/v2.1-camera/ConcreteVision-Standalone-v2-debug.apk)** from the **[v2.1-camera release](https://github.com/srikant31/final_year_pbl/releases/tag/v2.1-camera)** and install it on your phone.
+## Validation and limitations
 
-- Android 7/API 24 or newer; ARM64 phones supported. x86_64 emulator libraries are also included.
-- Approximately 154 MB download; allow additional RAM/storage for inference.
-- App name: **Concrete Vision Offline**. Version: **2.1-camera**, versionCode **2**.
-- This is a development-signed test APK, not a Play Store release.
-- Take photo → use/confirm the captured photo → preview → Analyze photograph.
-- Captures are temporary inspection inputs, not a permanent gallery. Reset/replacement removes app-owned captures.
+Android build and lint passed (0 errors,13 warnings). Emulator suite completed19 tests including one skipped opt-in cloud test. Samsung passed the real direct-cloud test with USB forwarding removed, plus four-image pixel/gate parity checks. The live run took35.1s: primary3.8 returned503, then3.6 answered in7.7s. These are single-run observations, not a speed guarantee. Gemini predictions can vary; accuracy remains unvalidated. Android JPEG decoding/encoding is not promised byte-identical to Pillow. Read [full test evidence](standalone/verification/phone_agentic/REPORT.md) and [phone-only flow/setup](PHONE_AGENTIC.md).
 
-The released APK is the same artifact installed on the development Samsung SM-A276B. Installation/launch succeeded there; the automated capture tests use a substitute camera Activity, not the phone sensor.
+## Build
 
-## Features
-
-- Full-resolution camera capture through the installed camera app and restricted temporary content-URI grants.
-- Existing-image picker and preview, including display-only EXIF orientation correction.
-- Offline float32 ONNX Runtime CPU inference using the original Flowx ResNet50 weights.
-- Honeycombing, crack, spalling and void predictions; confidence and four probability bars.
-- Inherited confidence-based severity and original fixed recommendation text.
-- Background model preparation/analysis, reset and Activity-state restoration.
-- JPEG/PNG/BMP validation, 15 MiB input limit and bounded dimensions.
-
-No live-camera/continuous inference, healthy/unknown category, saved site gallery, PDF export or quality-warning system is implemented. Future ideas are in [features.md](features.md).
-
-## Build in Android Studio
-
-Requirements: Android Studio, JDK **17**, SDK **35** / Build Tools **35.0.0**, Python 3.12 for asset download/export tools.
-
-```powershell
-git clone https://github.com/srikant31/final_year_pbl.git
-cd final_year_pbl
-python standalone/tools/download_assets.py --only model
-```
-
-Open **`standalone/android`** in Android Studio. Let Studio set your SDK location in its untracked `local.properties`, and select JDK17 for Gradle. Then select `app`, choose a device and press Run. The native screen is created in Kotlin; use the running app rather than an XML layout preview.
-
-Command-line build after configuring your SDK and JAVA_HOME:
-
-```powershell
-cd standalone/android
-.\gradlew.bat assembleDebug lintDebug
-```
-
-The APK is generated under `app/build/outputs/apk/debug/app-debug.apk`. Large model/APK/checkpoint files are release assets, not Git blobs. Downloads verify their pinned SHA-256 values from [release-assets.json](release-assets.json). Build/setup needs internet; installed analysis is offline.
-
-## Reproduce export and device tests
-
-The original four-class checkpoint is needed only for export/reference generation, not for ordinary Android builds.
-
-```powershell
-python standalone/tools/download_assets.py --only checkpoint
-python -m venv .venv-export
-.\.venv-export\Scripts\python.exe -m pip install torch==2.12.1 torchvision==0.27.1 --index-url https://download.pytorch.org/whl/cpu
-.\.venv-export\Scripts\python.exe -m pip install -r standalone/requirements-export.txt
-.\.venv-export\Scripts\python.exe -B standalone/tools/export_model.py --skip-export
-cd standalone/android
-.\gradlew.bat connectedDebugAndroidTest
-```
-
-`--skip-export` checks the released ONNX against the checkpoint and generates the test JPEG/PNG/tensor fixtures. Omit it to export a new float32 artifact from the same original checkpoint. No retraining or quantization is performed. Python's Windows installation must include Tkinter, which the original Flowx module imports; the exporter does not start its GUI.
-
-## Model limitations and verification
-
-This is a four-class classifier, not a structural safety assessment. It always picks one defect, including for healthy walls or unrelated images. High confidence is not proof of correctness. The inherited severity buckets (>85% HIGH, >60% MEDIUM, otherwise LOW) do not measure damage. Recommendations are original fixed strings. A supplied `crack.jpg` is classified as spalling by the original model as well.
-
-Four matching examples establish conversion parity, not dataset accuracy. All14 targeted emulator tests passed: six capture/storage/provider/preview scenarios and eight existing inference/UI checks. Model and metadata bytes were unchanged by the camera addition; normalized PNG sample inputs matched exactly. Sanitized evidence is in `standalone/verification/`. Performance varies with emulator warm-up, device, image size and graphics; no live-camera FPS is established.
-
-## Source map
-
-| Path | Purpose |
-|---|---|
-| `standalone/android/app/src/main/java/com/concretevision/offline/` | Native Activity, loader, exact resize, ONNX inference, capture storage/provider and display preview |
-| `standalone/android/app/src/main/res/xml/camera_paths.xml` | Restricts camera-sharing to app-owned capture files |
-| `standalone/android/app/src/androidTest/` | Camera substitute, cross-UID URI tests, inference regressions and capacity benchmark |
-| `standalone/android/app/src/main/assets/model_metadata.json` | Original class order, normalization, thresholds/action strings and model hashes |
-| `standalone/tools/` | Public release downloader and original-model export/parity tooling |
-| `4-Class-HCSV/main.py` | Unmodified teacher Flowx desktop implementation used by export |
-| `samples/`, `logo.jpeg` | Supplied project sample images and branding |
-| `release-assets.json` | Published binary destinations, sizes and SHA-256 hashes |
-| `llm_handoff.md` | Public continuation notes for coding assistants |
-
-The unrelated Agentic/cloud and three-class desktop branches, local environments/build caches, machine-specific configuration, credentials and personal phone-test images are excluded from this publication.
+Use the `codex/agentic-ai-gemini-call` branch. Run `python standalone/tools/download_assets.py --only model` to download the checksum-pinned, unchanged Flowx ONNX asset. The TFLite and contract assets are included in this branch. Open `standalone/android` in Android Studio, set JDK17 and your SDK location, then Run. Or run `gradlew.bat assembleDebug lintDebug` from that directory with JAVA_HOME and the SDK configured. Existing Python launchers are optional desktop comparison tools for the older laptop-assisted pipeline.

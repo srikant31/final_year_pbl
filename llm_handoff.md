@@ -1,3 +1,7 @@
+# Current release: v2.3 phone-only Agentic AI
+
+The current Android app no longer uses the laptop backend. See [PHONE_AGENTIC.md](PHONE_AGENTIC.md) and the current root README. Earlier laptop-assisted or offline-only descriptions below are historical. The new APK is compiled, tested and installed on Samsung. No key is published.
+
 # Claude / coding-assistant handoff
 
 This is the public standalone v2 source distribution, prepared from the tested local project. Read README.md first. Preserve the trained model, class order, preprocessing arithmetic, confidence thresholds and recommendation text unless the user explicitly requests a separately validated change. No retraining is part of this implementation.

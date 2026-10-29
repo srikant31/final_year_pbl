@@ -1,3 +1,7 @@
+# Current release: v2.3 phone-only Agentic AI
+
+The current Android app no longer uses the laptop backend. See [PHONE_AGENTIC.md](../../PHONE_AGENTIC.md) and the current root README. Earlier laptop-assisted or offline-only descriptions below are historical. The new APK is compiled, tested and installed on Samsung. No key is published.
+
 # Standalone Android implementation
 
 ## Camera update — 29 October 2026 (current behavior)
