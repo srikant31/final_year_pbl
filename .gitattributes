@@ -1,0 +1,2 @@
+# Preserve the exact supplied source bytes and cross-platform wrapper line endings.
+* -text

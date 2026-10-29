@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "model_name": "Flowx",
+  "classes": [
+    "honeycombing",
+    "crack",
+    "spalling",
+    "void"
+  ],
+  "image_size": 224,
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "input_name": "image",
+  "output_name": "logits",
+  "input_shape": [
+    1,
+    3,
+    224,
+    224
+  ],
+  "actions": {
+    "honeycombing": {
+      "LOW": "Localised Honeycombing — Repair Required.\n  1. Mark the full extent of honeycombing using hammer sounding or UPV testing.\n  2. Cut perimeter to sound concrete with a saw; remove loose material mechanically.\n  3. Sandblast or water-blast surface to ICRI CSP-5 profile.\n  4. Apply bonding agent (epoxy or SBR slurry); then fill with non-shrink repair mortar or micro-concrete (min. compressive strength 40 MPa at 28 days).\n  5. Cure thoroughly; apply protective coating on completion.\n  Ref: IS 456 / ACI 546R / ICRI 310.2R",
+      "MEDIUM": "Localised Honeycombing — Repair Required.\n  1. Mark the full extent of honeycombing using hammer sounding or UPV testing.\n  2. Cut perimeter to sound concrete with a saw; remove loose material mechanically.\n  3. Sandblast or water-blast surface to ICRI CSP-5 profile.\n  4. Apply bonding agent (epoxy or SBR slurry); then fill with non-shrink repair mortar or micro-concrete (min. compressive strength 40 MPa at 28 days).\n  5. Cure thoroughly; apply protective coating on completion.\n  Ref: IS 456 / ACI 546R / ICRI 310.2R",
+      "HIGH": "CRITICAL — Severe Honeycombing Detected.\n  1. STOP all loading on the affected member immediately.\n  2. Commission a specialist structural assessment; consider temporary propping.\n  3. Conduct core drilling and UPV/GPR testing to determine void volume and rebar exposure.\n  4. If void depth > 50% of member thickness or rebar is exposed over > 300 mm length: partial or full demolition and re-casting may be required.\n  5. If repair is feasible: remove all loose aggregate, clean rebar, and fill voids using non-shrink cementitious grout (≥ M50) via pressure injection or dry-packing.\n  6. Apply passivation layer on rebars before grouting.\n  Ref: IS 456 Cl. 13 / ACI 301 / EN 1504-6"
+    },
+    "crack": {
+      "LOW": "Non-Structural / Hairline Crack — Seal & Observe.\n  1. Map crack pattern to classify (shrinkage, thermal, or settlement origin).\n  2. For cracks < 0.2 mm width: apply flexible polyurethane or epoxy crack sealer.\n  3. For cracks 0.2–0.3 mm: route and seal using V-groove cutting and elastomeric sealant.\n  4. Apply waterproof crystalline coating to prevent water ingress and rebar corrosion.\n  5. Schedule 6-monthly monitoring; escalate if crack width increases by > 0.05 mm.\n  Ref: IS 456 Table 20 / ACI 224R",
+      "MEDIUM": "Non-Structural / Hairline Crack — Seal & Observe.\n  1. Map crack pattern to classify (shrinkage, thermal, or settlement origin).\n  2. For cracks < 0.2 mm width: apply flexible polyurethane or epoxy crack sealer.\n  3. For cracks 0.2–0.3 mm: route and seal using V-groove cutting and elastomeric sealant.\n  4. Apply waterproof crystalline coating to prevent water ingress and rebar corrosion.\n  5. Schedule 6-monthly monitoring; escalate if crack width increases by > 0.05 mm.\n  Ref: IS 456 Table 20 / ACI 224R",
+      "HIGH": "CRITICAL — Structural Crack Detected.\n  1. Immediately restrict access and notify the structural engineer of record.\n  2. Install tell-tales or crack-width gauges to monitor crack propagation.\n  3. Conduct ground-penetrating radar (GPR) or ultrasonic pulse velocity (UPV) test to map crack depth and extent.\n  4. For active cracks (width > 0.3 mm, IS 456): perform epoxy pressure injection using low-viscosity resin (≤ 200 cP) at ports spaced 150–300 mm.\n  5. For flexural or shear cracks: evaluate structural adequacy per IS 456 Cl. 22; design and install CFRP strips or steel plate bonding as required.\n  6. Address root cause: overloading, differential settlement, shrinkage.\n  Ref: IS 456 / ACI 224R / ICRI 310.3R"
+    },
+    "spalling": {
+      "LOW": "Minor Surface Spalling — Monitor & Seal.\n  1. Clean the affected area with a wire brush to remove dust and loose material.\n  2. Fill with cement-sand slurry or acrylic-modified patching compound.\n  3. Schedule quarterly visual inspection for progression.\n  4. Ensure adequate drainage to prevent water ponding near the surface.\n  Ref: IS 2212 / ACI 546R",
+      "MEDIUM": "Moderate Spalling — Remediation Required Within 30 Days.\n  1. Remove loose and unsound concrete using chipping hammer or hydro-jetting.\n  2. Check rebar cover depth; restore to IS 456 minimum (40 mm for severe exposure).\n  3. Apply polymer-modified repair mortar (class R3 per EN 1504-3) in layers ≤ 10 mm.\n  4. Cure for minimum 7 days under wet burlap or curing compound.\n  5. Apply elastomeric coating or anti-carbonation coating to prevent recurrence.\n  Ref: IS 13935 / EN 1504 Part 3",
+      "HIGH": "URGENT — Structural Integrity at Risk.\n  1. Cordon off the affected zone immediately per IS 456 / ACI 318 safety protocols.\n  2. Conduct half-cell potential & carbonation depth tests to assess rebar corrosion extent.\n  3. Break out all delaminated concrete to sound substrate (minimum 25 mm beyond spall edge).\n  4. Clean exposed rebar with wire brushing; apply epoxy-based anti-corrosion primer.\n  5. Reinstate using polymer-modified cementitious repair mortar (≥ M40 equivalent).\n  6. Apply a penetrating silane-siloxane sealer to the repaired surface.\n  7. Commission a licensed structural engineer to evaluate load capacity and specify any additional strengthening (e.g., CFRP wrapping or section enlargement).\n  Ref: IS 9537 / ICRI Guideline No. 310.2R"
+    },
+    "void": {
+      "LOW": "Voids Detected — Grouting & Structural Review Required.\n  1. Delineate void extent using GPR survey or endoscopic inspection.\n  2. Drill injection ports (dia. 12–16 mm) at 200–400 mm spacing around the void zone.\n  3. Flush voids with water under low pressure to remove dust; allow to dry.\n  4. Inject non-shrink cementitious or epoxy grout under controlled pressure until grout returns at adjacent ports.\n  5. Seal ports after grout sets; retest with UPV to confirm void elimination.\n  6. If void is sub-structural (e.g., under slab): consult geotechnical engineer to assess bearing capacity impact.\n  Ref: IS 9537 / ACI 351.1R / EN 1504-5",
+      "MEDIUM": "Voids Detected — Grouting & Structural Review Required.\n  1. Delineate void extent using GPR survey or endoscopic inspection.\n  2. Drill injection ports (dia. 12–16 mm) at 200–400 mm spacing around the void zone.\n  3. Flush voids with water under low pressure to remove dust; allow to dry.\n  4. Inject non-shrink cementitious or epoxy grout under controlled pressure until grout returns at adjacent ports.\n  5. Seal ports after grout sets; retest with UPV to confirm void elimination.\n  6. If void is sub-structural (e.g., under slab): consult geotechnical engineer to assess bearing capacity impact.\n  Ref: IS 9537 / ACI 351.1R / EN 1504-5",
+      "HIGH": "Voids Detected — Grouting & Structural Review Required.\n  1. Delineate void extent using GPR survey or endoscopic inspection.\n  2. Drill injection ports (dia. 12–16 mm) at 200–400 mm spacing around the void zone.\n  3. Flush voids with water under low pressure to remove dust; allow to dry.\n  4. Inject non-shrink cementitious or epoxy grout under controlled pressure until grout returns at adjacent ports.\n  5. Seal ports after grout sets; retest with UPV to confirm void elimination.\n  6. If void is sub-structural (e.g., under slab): consult geotechnical engineer to assess bearing capacity impact.\n  Ref: IS 9537 / ACI 351.1R / EN 1504-5"
+    }
+  },
+  "model_sha256": "673b5ba77e6e899a37cdacd7391c989107d140cd743b94996f6731c03c09d321",
+  "source_sha256": "ae555df21445e0dfd73d5cfe5735fce5d4bd3d255dac152250a31e93a2008a7b",
+  "checkpoint_sha256": "9b75c7828f9d5231851055d1304d82977f52b19779001e7c26f865ccc74fdacf",
+  "preprocessing": "RGB, Pillow-compatible bilinear resize, NCHW, ImageNet normalization; no EXIF transpose",
+  "severity_rule": "HIGH if confidence > 0.85; MEDIUM if > 0.60; otherwise LOW",
+  "deployment": "float32 ONNX opset 17, CPU; no training or quantization"
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name="com.concretevision.offline.FixtureCameraActivity" android:exported="true" />
+        <!-- Instrumentation APK only. Exposes only the four bundled sample fixtures, never production data. -->
+        <provider android:name="com.concretevision.offline.FixtureProvider"
+            android:authorities="com.concretevision.offline.test.fixtures"
+            android:exported="true" android:grantUriPermissions="true" />
+    </application>
+</manifest>

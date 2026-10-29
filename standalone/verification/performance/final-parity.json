@@ -1,0 +1,62 @@
+[
+  {
+    "file": "crack.jpg",
+    "tensor_probability_error": 6.250624440262698E-8,
+    "png_tensor_error": 0,
+    "png_probability_error": 6.250624440262698E-8,
+    "jpeg_probability_error": 6.250624440262698E-8,
+    "jpeg_defect": "spalling",
+    "jpeg_probabilities": [
+      0.0011502628538163917,
+      0.0034689123044740794,
+      0.990327957193897,
+      0.0050528676478125535
+    ],
+    "elapsed_ms": 311
+  },
+  {
+    "file": "honeycomb.jpg",
+    "tensor_probability_error": 9.950915790257753E-7,
+    "png_tensor_error": 0,
+    "png_probability_error": 9.950915790257753E-7,
+    "jpeg_probability_error": 9.950915790257753E-7,
+    "jpeg_defect": "honeycombing",
+    "jpeg_probabilities": [
+      0.5629081544200397,
+      0.0029079394825253647,
+      0.40392919586438336,
+      0.030254710233051645
+    ],
+    "elapsed_ms": 287
+  },
+  {
+    "file": "spalling.jpg",
+    "tensor_probability_error": 2.952607580652966E-8,
+    "png_tensor_error": 0,
+    "png_probability_error": 2.952607580652966E-8,
+    "jpeg_probability_error": 2.952607580652966E-8,
+    "jpeg_defect": "spalling",
+    "jpeg_probabilities": [
+      0.02008129203640069,
+      0.0017238737831898729,
+      0.974979012928328,
+      0.003215821252081462
+    ],
+    "elapsed_ms": 267
+  },
+  {
+    "file": "void.jpg",
+    "tensor_probability_error": 7.999063849073451E-7,
+    "png_tensor_error": 0,
+    "png_probability_error": 7.999063849073451E-7,
+    "jpeg_probability_error": 7.999063849073451E-7,
+    "jpeg_defect": "void",
+    "jpeg_probabilities": [
+      0.0554806618779511,
+      9.653525117998505E-4,
+      0.09402748611248979,
+      0.8495264994977594
+    ],
+    "elapsed_ms": 282
+  }
+]

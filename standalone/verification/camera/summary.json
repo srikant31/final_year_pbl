@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "versionCode": 2,
+  "versionName": "2.1-camera",
+  "tests_passed": 14,
+  "test_seconds": 72.953,
+  "model_sha256": "673b5ba77e6e899a37cdacd7391c989107d140cd743b94996f6731c03c09d321",
+  "model_identical_to_previous_apk": true,
+  "metadata_identical_to_previous_apk": true,
+  "teacher_files_unchanged": 32,
+  "apk_bytes": 153716601,
+  "apk_sha256": "2ba7715bf76a71dceed24f91faa0bb1b43834f1013a2d40d8be7e5621287a2ca",
+  "scope": "Emulator tests use a test-only camera Activity with actual cross-UID output URI writes. Real Samsung shutter flow needs manual confirmation."
+}

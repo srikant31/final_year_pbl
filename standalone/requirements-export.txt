@@ -1,0 +1,7 @@
+# Install torch/torchvision from https://download.pytorch.org/whl/cpu on Windows.
+torch==2.12.1
+torchvision==0.27.1
+numpy==2.4.6
+Pillow==12.2.0
+onnx==1.20.1
+onnxruntime==1.24.3

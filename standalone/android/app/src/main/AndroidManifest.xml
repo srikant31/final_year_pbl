@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Capture is delegated to a camera app. No CAMERA, INTERNET or broad storage permission. -->
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <application android:allowBackup="false" android:label="Concrete Vision Offline"
+        android:icon="@drawable/logo" android:supportsRtl="true" android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="false">
+        <provider android:name=".CaptureFileProvider" android:authorities="${applicationId}.captures"
+            android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/camera_paths" />
+        </provider>
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

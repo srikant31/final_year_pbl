@@ -1,0 +1,24 @@
+{
+  "tag": "v2.1-camera",
+  "assets": [
+    {
+      "name": "flowx.onnx",
+      "path": "standalone/android/app/src/main/assets/flowx.onnx",
+      "sha256": "673b5ba77e6e899a37cdacd7391c989107d140cd743b94996f6731c03c09d321",
+      "bytes": 93983163
+    },
+    {
+      "name": "best_model_4class_hcsv_20251103_1716.pth",
+      "path": "4-Class-HCSV/model/best_model_4class_hcsv_20251103_1716.pth",
+      "sha256": "9b75c7828f9d5231851055d1304d82977f52b19779001e7c26f865ccc74fdacf",
+      "bytes": 282672926
+    },
+    {
+      "name": "ConcreteVision-Standalone-v2-debug.apk",
+      "path": "standalone/dist/ConcreteVision-Standalone-v2-debug.apk",
+      "sha256": "2ba7715bf76a71dceed24f91faa0bb1b43834f1013a2d40d8be7e5621287a2ca",
+      "bytes": 153716601
+    }
+  ],
+  "repository": "srikant31/final_year_pbl"
+}
