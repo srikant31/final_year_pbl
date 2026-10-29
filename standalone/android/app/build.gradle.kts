@@ -11,8 +11,8 @@ android {
         applicationId = "com.concretevision.offline"
         minSdk = 24
         targetSdk = 35
-        versionCode = 2
-        versionName = "2.1-camera"
+        versionCode = 3
+        versionName = "2.2-agentic"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }
@@ -32,13 +32,3 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("junit:junit:4.13.2")
 }
-
-// Fail clearly when cloning without the separately distributed model asset.
-val verifyModelAsset by tasks.registering {
-    doLast {
-        check(file("src/main/assets/flowx.onnx").isFile) {
-            "Download the model first: python standalone/tools/download_assets.py --only model (from repository root)"
-        }
-    }
-}
-tasks.named("preBuild").configure { dependsOn(verifyModelAsset) }

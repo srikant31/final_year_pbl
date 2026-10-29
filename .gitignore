@@ -16,3 +16,5 @@ __pycache__/
 .env.*
 /standalone/dist/
 /standalone/android/app/src/androidTest/assets/
+
+**/secrets.local.json

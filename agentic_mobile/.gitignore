@@ -1,0 +1,4 @@
+secrets.local.json
+.env*
+__pycache__/
+verification/

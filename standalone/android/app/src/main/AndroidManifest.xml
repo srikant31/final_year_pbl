@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Capture is delegated to a camera app. No CAMERA, INTERNET or broad storage permission. -->
+    <!-- Online mode uses the laptop adapter; camera capture remains delegated. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
-    <application android:allowBackup="false" android:label="Concrete Vision Offline"
+    <application android:allowBackup="false" android:label="Concrete Vision"
         android:icon="@drawable/logo" android:supportsRtl="true" android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="false">
+        android:usesCleartextTraffic="false" android:networkSecurityConfig="@xml/network_security_config">
         <provider android:name=".CaptureFileProvider" android:authorities="${applicationId}.captures"
             android:exported="false" android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/camera_paths" />

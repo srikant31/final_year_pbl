@@ -1,3 +1,11 @@
+# Agentic AI Gemini Call
+
+Android v2.2 adds Professor Agentic online mode while retaining offline Flowx and camera capture. Gemini3.8 Flash falls back to3.6 Flash for availability failures. The local trained models, gate, prompt, parser and action rules are preserved. The published teacher Agentic source has its embedded credential removed; configure your own key privately.
+
+See [setup and flow](agentic_mobile/README.md) and [test evidence](agentic_mobile/verification/REPORT.md). Start with SETUP_AGENTIC.cmd, SET_GEMINI_KEY.cmd, START_AGENTIC_SERVER.cmd and CONNECT_AGENTIC_USB.cmd. The online mode requires the laptop, USB forwarding and laptop internet. The offline mode remains independent.
+
+Live backend fallback succeeded in38.8s;14 backend checks passed. Gemini labels varied across repeated calls; accuracy and consistency are not established. The physical-phone cloud report display still needs manual verification. Earlier offline-release documentation follows.
+
 # final_year_pbl — Concrete Vision Offline
 
 Standalone Android concrete-defect inspection app. **Take a photo** using the phone's camera or **choose an existing photograph**, then run the bundled four-class model locally. No laptop server or internet connection is needed for analysis.

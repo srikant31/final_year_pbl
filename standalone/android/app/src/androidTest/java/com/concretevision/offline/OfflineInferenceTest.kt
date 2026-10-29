@@ -125,10 +125,12 @@ class OfflineInferenceTest {
         }
     }
 
-    @Test fun testApplicationHasNoNetworkPermission() {
+    @Test fun testOnlineNetworkingIsRestrictedToLoopbackForCleartext() {
         val context = instrumentation.targetContext
         val info = context.packageManager.getPackageInfo(context.packageName,PackageManager.GET_PERMISSIONS)
-        assertFalse(info.requestedPermissions?.contains("android.permission.INTERNET") ?: false)
+        assertTrue(info.requestedPermissions?.contains("android.permission.INTERNET") ?: false)
+        assertTrue(android.security.NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted("127.0.0.1"))
+        assertFalse(android.security.NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted("example.com"))
     }
 
     @Test fun testInitialUiAndReset() {

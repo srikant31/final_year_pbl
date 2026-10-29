@@ -19,7 +19,7 @@ import org.json.JSONObject
 import java.util.Locale
 import java.util.concurrent.Executors
 
-/** All interaction is native Android. There is no network client or Python server. */
+/** Native UI: unchanged offline Flowx plus the original online Agentic pipeline. */
 class MainActivity : Activity() {
     private val worker = Executors.newSingleThreadExecutor()
     private var classifier: OfflineClassifier? = null
@@ -27,6 +27,13 @@ class MainActivity : Activity() {
     private var currentUri: Uri? = null
     private var currentName = ""
     private var lastPrediction: Prediction? = null
+    private var lastAgentic: JSONObject? = null
+    private var selectedMode = 0
+    private val agenticClient = AgenticClient()
+    private lateinit var modeGroup: RadioGroup
+    private lateinit var modeExplanation: TextView
+    private lateinit var modeBadge: TextView
+    private lateinit var limitations: TextView
     private var generation = 0
     private var busy = false
     private lateinit var choose: Button
@@ -48,11 +55,12 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        selectedMode = savedInstanceState?.getInt("analysis_mode",0) ?: 0
         buildScreen()
         pendingCameraName = savedInstanceState?.getString("pending_capture")?.takeIf {
             runCatching { captures.file(it).isFile }.getOrDefault(false)
         }
-        worker.execute {
+        if (selectedMode == 0) worker.execute {
             try {
                 val model = classifier ?: OfflineClassifier(applicationContext).also { classifier = it }
                 model.prepare()
@@ -61,6 +69,7 @@ class MainActivity : Activity() {
         }
         if (savedInstanceState != null) {
             lastPrediction = savedInstanceState.getString("prediction")?.let { decodePrediction(it) }
+            lastAgentic = savedInstanceState.getString("agentic_report")?.let { runCatching { JSONObject(it) }.getOrNull() }
             val uri = savedInstanceState.getString("image_uri")
             if (uri != null) selectImage(Uri.parse(uri), savedInstanceState.getString("image_name") ?: "Photograph", true)
         }
@@ -102,11 +111,27 @@ class MainActivity : Activity() {
         header.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(label("Concrete Vision",23f).apply { setTypeface(null,Typeface.BOLD) })
-            addView(label("OFFLINE • ON YOUR PHONE",12f,accent))
+            modeBadge=label("",12f,accent); addView(modeBadge)
         })
         content.addView(header)
         content.addView(label("Take a photo or choose an existing concrete photograph to analyze on this device.",15f,muted))
-        content.addView(label("No laptop or internet required",14f,Color.rgb(64,210,162)))
+        modeGroup=RadioGroup(this).apply {
+            orientation=RadioGroup.VERTICAL
+            addView(RadioButton(this@MainActivity).apply { id=ID_MODE_OFFLINE; text="Flowx - offline"; setTextColor(this@MainActivity.foreground) })
+            addView(RadioButton(this@MainActivity).apply { id=ID_MODE_AGENTIC; text="Professor Agentic - online"; setTextColor(this@MainActivity.foreground) })
+            check(if(selectedMode==0) ID_MODE_OFFLINE else ID_MODE_AGENTIC)
+            setOnCheckedChangeListener { _,id ->
+                val mode=if(id==ID_MODE_AGENTIC) 1 else 0
+                if(mode!=selectedMode) {
+                    selectedMode=mode; lastPrediction=null; lastAgentic=null
+                    report.removeAllViews(); report.visibility=View.GONE
+                    updateModeText()
+                    status.text="Mode selected. Choose/take a photo, then Analyze."
+                }
+            }
+        }
+        content.addView(modeGroup)
+        modeExplanation=label("",13f,muted); content.addView(modeExplanation)
         takePhoto = button("Take photo",ID_CAMERA,Color.rgb(29,111,165))
         takePhoto.setOnClickListener { openCamera() }; content.addView(takePhoto)
         choose = button("Choose a photograph",ID_CHOOSE,Color.rgb(29,111,165))
@@ -132,7 +157,8 @@ class MainActivity : Activity() {
             background = background(card); visibility = View.GONE
         }
         content.addView(report,LinearLayout.LayoutParams(-1,-2).apply { topMargin = dp(18) })
-        content.addView(label("Model outputs one of four defect labels. It has no healthy/unknown category. The inherited severity label is based on confidence; it does not measure physical damage.",12f,muted))
+        limitations=label("",12f,muted); content.addView(limitations)
+        updateModeText()
         setContentView(frame)
         frame.requestApplyInsets()
     }
@@ -211,7 +237,7 @@ class MainActivity : Activity() {
         val token = ++generation
         if (currentUri != uri) captures.deleteOwned(currentUri)
         currentUri = uri; currentName = name; currentBitmap = null
-        if (!restoring) lastPrediction = null
+        if (!restoring) { lastPrediction = null; lastAgentic = null }
         report.visibility = View.GONE; preview.visibility = View.GONE
         filename.text = name
         setBusy(true,"Opening photograph…")
@@ -224,57 +250,90 @@ class MainActivity : Activity() {
                     if (isDestroyed || token != generation) return@runOnUiThread
                     currentBitmap = bitmap
                     preview.setImageBitmap(thumbnail); preview.visibility = View.VISIBLE
-                    setBusy(false,"Photograph ready. Analysis runs entirely on this phone.")
+                    setBusy(false,if(selectedMode==0) "Photograph ready. Analysis runs entirely on this phone." else "Photograph ready. Analyze will send it to the laptop pipeline.")
                     lastPrediction?.let { showPrediction(it) }
+                    lastAgentic?.let { showAgentic(it) }
                 }
             } catch (e: Exception) {
                 runOnUiThread { if (!isDestroyed && token == generation) {
-                    captures.deleteOwned(uri); currentUri = null; lastPrediction = null; setBusy(false,""); showError(e.message ?: "Cannot open this image.")
+                    captures.deleteOwned(uri); currentUri = null; lastPrediction = null; lastAgentic = null; setBusy(false,""); showError(e.message ?: "Cannot open this image.")
                 } }
             } catch (_: OutOfMemoryError) {
                 runOnUiThread { if (!isDestroyed && token == generation) {
-                    captures.deleteOwned(uri); currentUri = null; lastPrediction = null; setBusy(false,""); showError("Not enough memory. Choose a smaller photograph.")
+                    captures.deleteOwned(uri); currentUri = null; lastPrediction = null; lastAgentic = null; setBusy(false,""); showError("Not enough memory. Choose a smaller photograph.")
                 } }
             }
         }
     }
 
     private fun runAnalysis() {
-        val bitmap = currentBitmap ?: return
-        if (busy) return
-        val token = generation
-        lastPrediction = null; report.visibility = View.GONE
-        setBusy(true,"Analyzing on this phone… First analysis prepares the bundled model.")
+        val bitmap=currentBitmap ?: return
+        val uri=currentUri ?: return
+        if(busy) return
+        val token=generation; val mode=selectedMode
+        lastPrediction=null;lastAgentic=null;report.visibility=View.GONE
+        setBusy(true,if(mode==0) "Analyzing on this phone..." else "Running professor pipeline on laptop; Gemini may take a moment...")
         worker.execute {
             try {
-                val model = classifier ?: OfflineClassifier(applicationContext).also { classifier = it }
-                val result = model.predict(bitmap)
-                runOnUiThread { if (!isDestroyed && token == generation) {
-                    lastPrediction = result; setBusy(false,"Analysis complete • ${result.elapsedMs} ms on this device")
-                    showPrediction(result)
+                if(mode==0) {
+                    val model=classifier ?: OfflineClassifier(applicationContext).also { classifier=it }
+                    val result=model.predict(bitmap)
+                    runOnUiThread { if(!isDestroyed && token==generation) {
+                        lastPrediction=result;setBusy(false,"Analysis complete - ${result.elapsedMs} ms on this device")
+                        showPrediction(result)
+                    } }
+                } else {
+                    val result=agenticClient.analyze(applicationContext,uri)
+                    runOnUiThread { if(!isDestroyed && token==generation) {
+                        lastAgentic=result;setBusy(false,"Professor pipeline complete")
+                        showAgentic(result)
+                    } }
+                }
+            } catch(e: Exception) {
+                runOnUiThread { if(!isDestroyed && token==generation) {
+                    setBusy(false,"")
+                    showError(if(mode==1) "Online analysis failed. Check laptop server, USB forwarding and internet. ${e.message ?: "Retry when connected."}"
+                        else "Analysis failed. ${e.message ?: "Try again."}")
                 } }
-            } catch (e: Exception) {
-                runOnUiThread { if (!isDestroyed && token == generation) {
-                    setBusy(false,""); showError("Analysis failed. ${e.message ?: "Try again."}")
-                } }
-            } catch (_: OutOfMemoryError) {
-                runOnUiThread { if (!isDestroyed && token == generation) {
-                    setBusy(false,""); showError("Not enough memory to run the model. Close other apps and retry.")
-                } }
+            } catch(_: OutOfMemoryError) {
+                runOnUiThread { if(!isDestroyed && token==generation) {setBusy(false,"");showError("Not enough memory. Choose a smaller photograph.")} }
             }
         }
     }
 
+    private fun updateModeText() {
+        modeBadge.text=if(selectedMode==0) "OFFLINE - ON YOUR PHONE" else "PROFESSOR AGENTIC - ONLINE"
+        modeExplanation.text=if(selectedMode==0) "No laptop or internet required" else
+            "Requires USB connection and the laptop server. Analyze sends this photo to the laptop; Gemini receives it only when the original gate passes."
+        limitations.text=if(selectedMode==0)
+            "Model outputs one of four defect labels. It has no healthy/unknown category. The inherited severity label is based on confidence; it does not measure physical damage." else
+            "Original TFLite gate + Gemini pipeline. Gate score is not Gemini confidence. Original model limitations and recommendation rules are preserved."
+    }
+
+    private fun showAgentic(result: JSONObject) {
+        report.removeAllViews();report.visibility=View.VISIBLE
+        report.addView(label("PROFESSOR AGENTIC REPORT",13f,accent))
+        report.addView(label(result.getString("defect").uppercase(),24f))
+        report.addView(label("Severity: ${result.getString("severity").uppercase()}",18f))
+        report.addView(label("Local gate score: ${String.format(Locale.US,"%.6f",result.getDouble("gate_score"))}",16f))
+        report.addView(label("Local gate: ${result.getString("gate_verdict")} (threshold 0.75)",14f))
+        report.addView(label(if(result.getBoolean("gemini_called")) "Gemini: called (${result.getString("gemini_model")})" else "Gemini: skipped by original gate",14f))
+        report.addView(label("ORIGINAL ACTION RULES",13f,accent))
+        report.addView(label(result.getString("action"),14f))
+    }
+
     private fun setBusy(value: Boolean,message: String) {
         busy = value; choose.isEnabled = !value; takePhoto.isEnabled = !value; analyze.isEnabled = !value && currentBitmap != null
+        for(i in 0 until modeGroup.childCount) modeGroup.getChildAt(i).isEnabled = !value
         progress.visibility = if (value) View.VISIBLE else View.GONE
         status.text = message; status.setTextColor(muted)
     }
     private fun showError(message: String) { status.text = message; status.setTextColor(Color.rgb(255,139,139)) }
     private fun clearInspection() {
+        agenticClient.cancel()
         discardPendingCapture()
         captures.deleteOwned(currentUri)
-        generation++; currentBitmap = null; currentUri = null; lastPrediction = null; currentName = ""
+        generation++; currentBitmap = null; currentUri = null; lastPrediction = null; lastAgentic = null; currentName = ""
         preview.setImageDrawable(null); preview.visibility = View.GONE
         report.removeAllViews(); report.visibility = View.GONE
         filename.text = "JPEG, PNG or BMP • up to 15 MiB"
@@ -302,6 +361,8 @@ class MainActivity : Activity() {
     }
     private fun percent(value: Double) = String.format(Locale.US,"%.1f%%",value*100)
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt("analysis_mode",selectedMode)
+        lastAgentic?.let { outState.putString("agentic_report",it.toString()) }
         pendingCameraName?.let { outState.putString("pending_capture",it) }
         currentUri?.let { outState.putString("image_uri",it.toString()); outState.putString("image_name",currentName) }
         lastPrediction?.let { result ->
@@ -318,6 +379,7 @@ class MainActivity : Activity() {
             j.getString("action"),j.getLong("elapsedMs")) }
     } catch (_: Exception) { null }
     override fun onDestroy() {
+        agenticClient.cancel()
         generation++
         worker.execute { classifier?.close(); classifier = null }
         worker.shutdown()
@@ -327,6 +389,8 @@ class MainActivity : Activity() {
         private const val PICK_IMAGE = 100
         private const val CAPTURE_IMAGE = 101
         const val ID_CAMERA = 1008
+        const val ID_MODE_OFFLINE = 1009
+        const val ID_MODE_AGENTIC = 1010
         const val ID_CHOOSE = 1001
         const val ID_ANALYZE = 1002
         const val ID_RESET = 1003
